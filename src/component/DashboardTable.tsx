@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import api from "../config/axios";
 import { Crown } from "lucide-react";
 
 interface PlayerStats {
@@ -14,8 +13,17 @@ interface PlayerStats {
   gd: number;
 }
 
-export const DashboardTable = () => {
-  const [rows, setRows] = useState<PlayerStats[]>([]);
+interface TableComponentProps {
+  data: PlayerStats[];
+  refetchFlag: boolean;
+  fetchTableData: () => void;
+}
+
+export const DashboardTable: React.FC<TableComponentProps> = ({
+  data,
+  refetchFlag,
+  fetchTableData,
+}) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,8 +31,7 @@ export const DashboardTable = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await api.get<PlayerStats[]>("/dashboard");
-        setRows(response.data);
+        fetchTableData();
         setLoading(false);
       } catch (err) {
         setLoading(false);
@@ -35,7 +42,7 @@ export const DashboardTable = () => {
     };
 
     fetchData();
-  }, []);
+  }, [refetchFlag]);
 
   if (loading) {
     return (
@@ -85,10 +92,11 @@ export const DashboardTable = () => {
         </thead>
 
         <tbody className="divide-y divide-black bg-white">
-          {rows.map((row, index) => (
+          {data.map((row, index) => (
             <tr key={row.name} className="hover:bg-gray-50">
               <td className="whitespace-nowrap text-center px-6 py-4 text-sm ">
-                {index == 0 ? <Crown  className="h-4 w-4 rotate-315"/> : null} {row.name}
+                {index == 0 ? <Crown className="h-4 w-4 rotate-315" /> : null}{" "}
+                {row.name}
               </td>
               <td className="whitespace-nowrap text-center px-6 py-4 text-sm ">
                 {row.gamesPlayed}
