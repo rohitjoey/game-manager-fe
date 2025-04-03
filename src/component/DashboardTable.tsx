@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../config/axios";
+import { Crown } from "lucide-react";
 
 interface PlayerStats {
   id: string;
@@ -24,12 +25,12 @@ export const DashboardTable = () => {
         setLoading(true);
         const response = await api.get<PlayerStats[]>("/dashboard");
         setRows(response.data);
+        setLoading(false);
       } catch (err) {
+        setLoading(false);
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
         );
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -84,10 +85,10 @@ export const DashboardTable = () => {
         </thead>
 
         <tbody className="divide-y divide-black bg-white">
-          {rows.map((row) => (
+          {rows.map((row, index) => (
             <tr key={row.name} className="hover:bg-gray-50">
               <td className="whitespace-nowrap text-center px-6 py-4 text-sm ">
-                {row.name}
+                {index == 0 ? <Crown  className="h-4 w-4 rotate-315"/> : null} {row.name}
               </td>
               <td className="whitespace-nowrap text-center px-6 py-4 text-sm ">
                 {row.gamesPlayed}
